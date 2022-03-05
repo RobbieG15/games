@@ -1,14 +1,20 @@
-# imports 
+"""
+@Author: Robert Greenslade
+@
+@Title: Math Quiz 
+@
+@Date: January 10th, 2022
+"""
 
+# imports 
 import datetime
 import random
-import math
 import tkinter
 from tkinter.constants import CENTER
 
 
 # Initialize GUI 
-gui = tkinter.Tk(screenName='Math Quiz')
+gui = tkinter.Tk(screenName='Math Quiz @RobbieG15')
 gui.geometry('1000x1000')
 gui.configure(bg='black')
 

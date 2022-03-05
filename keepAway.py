@@ -1,3 +1,11 @@
+"""
+@Author: Robert Greenslade
+@
+@Title: Keep Away Game
+@
+@Date: June 15th, 2021
+"""
+
 import turtle, time, random
 
 #global variables
@@ -8,7 +16,7 @@ shot_speed = 20
 
 #set up window
 wn = turtle.Screen()
-wn.title('Keep Away by Robbie')
+wn.title('Keep Away @RobbieG15')
 wn.bgcolor('black')
 wn.screensize(300,300)
 wn.tracer(0)

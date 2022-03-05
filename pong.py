@@ -1,7 +1,15 @@
+"""
+@Author: Robert Greenslade
+@
+@Title: Pong
+@
+@Date: March 4th, 2022
+"""
+
 import turtle
 
 wn = turtle.Screen()
-wn.title('Pong')
+wn.title('Pong @RobbieG15')
 wn.bgcolor('black')
 wn.setup(width=800, height=600)
 

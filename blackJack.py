@@ -1,3 +1,11 @@
+"""
+@Author: Robert Greenslade
+@
+@Title: Blackjack Terminal Game 
+@
+@Date: May 20th, 2021
+"""
+
 import random
 
 # stores suits
