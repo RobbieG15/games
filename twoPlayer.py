@@ -8,16 +8,17 @@
 
 #Imports Needed
 import pygame
-import random
 
-#Constant Variables
+#Constant Variables for Window
 WIDTH = 800
 HEIGHT = 600
 FPS = 30
+
+# Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
-GREEN = (0, 200, 0)
+GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 #Initializing Pygame and Window
@@ -37,7 +38,7 @@ x1 = 50
 y1 = 550
 vel1 = 5
 
-# shooting
+# shooting variables
 velBulletTop = -5
 velBulletBottom = 5
 bulletsPlayer1 = []
@@ -48,11 +49,16 @@ rate = 15
 
 def shoot(bullets, vel):
     for i in bullets:
+        # checks to see if bullet is off screen to get rid of it 
         if i[1] < -50:
             bullets.remove(i)
         elif i[1] > 650:
             bullets.remove(i)
+        
+        # for each bullet in list, increment the position 
         i[1] -= vel
+        
+        # redraw the bullet at new position
         pygame.draw.rect(screen, WHITE, pygame.Rect(i, bulletSize))
 
 # health
@@ -61,6 +67,7 @@ totalHealthP2 = 150
 damage = 10
 
 def checkDie():
+    # checks if playerHealth <= 0, resets game if so
     if totalHealthP1 <= 0:
         resetGame()
     elif totalHealthP2 <= 0:
@@ -68,8 +75,12 @@ def checkDie():
 
 # collision checking
 def checkHit(bullets1, bullets2, x, y, x1, y1):
+
+    # getting access to variables needed
     global totalHealthP1
     global totalHealthP2
+
+    # checking for a hit
     for i in bullets1:
         if (i[0] in range(x1, x1+20)) and (i[1] in range(y1, y1+25)):
             bullets1.remove(i)
@@ -78,11 +89,14 @@ def checkHit(bullets1, bullets2, x, y, x1, y1):
         if (i[0] in range(x, x+20)) and (i[1] in range(y, y+25)):
             bullets2.remove(i)
             totalHealthP1 -= damage
+    
+    # checking for a player death (health <= 0)
     checkDie()
 
 
 # Game reset
 def resetGame():
+
     # getting access to the variables needed
     global totalHealthP1
     global totalHealthP2
@@ -94,13 +108,14 @@ def resetGame():
     totalHealthP2 = 150
     bulletsPlayer1 = []
     bulletsPlayer2 = []
-    print('GameReset')
 
 #Main Game Loop
 running = True
 while running:
+
     #Process input (events)
     for event in pygame.event.get():
+
         #Check for closing window
         if event.type == pygame.QUIT:
             running = False
@@ -108,6 +123,7 @@ while running:
     #keys
     keys = pygame.key.get_pressed()
 
+    # Player 1 movement
     if keys[pygame.K_a] and x > 0:
         x -= vel
     if keys[pygame.K_d] and x < 780:
@@ -117,6 +133,7 @@ while running:
     if keys[pygame.K_s] and y < 270:
         y += vel
 
+    # Player 2 movement
     if keys[pygame.K_LEFT] and x1 > 0:
         x1 -= vel
     if keys[pygame.K_RIGHT] and x1 < 780:
@@ -139,16 +156,21 @@ while running:
     shoot(bulletsPlayer1, velBulletTop)
     shoot(bulletsPlayer2, velBulletBottom)
 
-    # collision checking
+    # Collisions / Health / Reset
     checkHit(bulletsPlayer1, bulletsPlayer2, x, y, x1, y1-25)
 
     #Draw / Render
-    pygame.draw.rect(screen, RED, pygame.Rect((625,10), (totalHealthP1, 20)))
-    pygame.draw.rect(screen, RED, (625, 10, 150, 20), 2, border_radius=1)
-    pygame.draw.rect(screen, BLUE, pygame.Rect((625, 570), (totalHealthP2, 20)))
-    pygame.draw.rect(screen, BLUE, (625, 570, 150, 20), 2, border_radius=1)
-    pygame.draw.polygon(screen, RED, points=[(x, y), (x+20, y), (x+10, y+25)])
-    pygame.draw.polygon(screen, BLUE, points=[(x1, y1), (x1+20, y1), (x1+10, y1-25)])
+
+    pygame.draw.rect(screen, RED, pygame.Rect((625,10), (totalHealthP1, 20))) # red health bar
+    pygame.draw.rect(screen, RED, (625, 10, 150, 20), 2, border_radius=1) # red health bar outline
+    
+    pygame.draw.rect(screen, BLUE, pygame.Rect((625, 570), (totalHealthP2, 20))) # blue health bar
+    pygame.draw.rect(screen, BLUE, (625, 570, 150, 20), 2, border_radius=1) # blue health bar outline
+
+    pygame.draw.polygon(screen, RED, points=[(x, y), (x+20, y), (x+10, y+25)]) # red player
+    pygame.draw.polygon(screen, BLUE, points=[(x1, y1), (x1+20, y1), (x1+10, y1-25)]) # blue player
+    
+    # Update / Tick
     pygame.display.update()
     clock.tick(FPS)
 
