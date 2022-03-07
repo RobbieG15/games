@@ -7,8 +7,6 @@
 """
 
 #Imports Needed
-from ast import While
-from turtle import width
 import pygame
 
 #Constant Variables for Window
@@ -43,7 +41,7 @@ x1 = 50
 y1 = 550
 vel1 = 5
 
-# shooting variables
+# shooting mechanics
 velBulletTop = -5
 velBulletBottom = 5
 bulletsPlayer1 = []
@@ -66,7 +64,7 @@ def shoot(bullets, vel):
         # redraw the bullet at new position
         pygame.draw.rect(screen, WHITE, pygame.Rect(i, bulletSize))
 
-# health
+# health and death checking
 totalHealthP1 = 150
 totalHealthP2 = 150
 damage = 10
@@ -78,7 +76,7 @@ def checkDie():
     elif totalHealthP2 <= 0:
         resetGame()
 
-# collision checking
+# player hit check
 def checkHit(bullets1, bullets2, x, y, x1, y1):
 
     # getting access to variables needed
@@ -140,9 +138,6 @@ def mainMenu():
     if playing == False:
         startButton.show()
 
-
-
-
 # Game reset
 winP1 = 0
 winP2 = 0
@@ -152,11 +147,15 @@ def checkWin():
     global totalHealthP2
     global winP1
     global winP2
+    global winP2Text
+    global winP1Text
 
     if totalHealthP2 <= 0:
         winP2 += 1
+        winP2Text = smallFont.render(f"Wins: {winP1}", True, WHITE)
     else:
         winP1 += 1
+        winP1Text = smallFont.render(f"Wins: {winP1}", True, WHITE)
 
 def resetGame():
 
@@ -181,8 +180,6 @@ def resetGame():
 running = True
 while running:
 
-
-
     #Process input (events)
     for event in pygame.event.get():
 
@@ -190,8 +187,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         
-        startOrNot = startButton.click(event)
-        
+        startOrNot = startButton.click(event)   
 
     # main Menu check and logic
     mainMenu()
@@ -238,10 +234,8 @@ while running:
 
     #Draw / Render
 
-    winP1Text = smallFont.render(f"Wins: {winP1}", True, WHITE)
-    winP2Text = smallFont.render(f"Wins: {winP2}", True, WHITE)
-    screen.blit(winP1Text, (10, 10))
-    screen.blit(winP2Text, (10,560))
+    screen.blit(winP1Text, (10, 10)) # win total player 1 text
+    screen.blit(winP2Text, (10,560)) # win total player 2 text
 
     pygame.draw.rect(screen, RED, pygame.Rect((625,10), (totalHealthP1, 20))) # red health bar
     pygame.draw.rect(screen, RED, (625, 10, 150, 20), 2, border_radius=1) # red health bar outline
