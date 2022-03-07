@@ -153,11 +153,11 @@ def checkWin():
     global winP1Text
 
     if totalHealthP2 <= 0:
-        winP2 += 1
-        winP2Text = smallFont.render(f"Wins: {winP2}", True, WHITE)
-    else:
         winP1 += 1
         winP1Text = smallFont.render(f"Wins: {winP1}", True, WHITE)
+    else:
+        winP2 += 1
+        winP2Text = smallFont.render(f"Wins: {winP2}", True, WHITE)
 
 def resetGame():
 
