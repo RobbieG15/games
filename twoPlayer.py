@@ -7,6 +7,8 @@
 """
 
 #Imports Needed
+from ast import While
+from turtle import width
 import pygame
 
 #Constant Variables for Window
@@ -27,6 +29,9 @@ pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Two Player Game @RobbieG15")
 clock = pygame.time.Clock()
+
+# Fonts
+smallFont = pygame.font.SysFont('Corbel',35)
 
 # player1 variables
 x = 50
@@ -93,8 +98,66 @@ def checkHit(bullets1, bullets2, x, y, x1, y1):
     # checking for a player death (health <= 0)
     checkDie()
 
+# Main Menu
+playing = False
+playText = smallFont.render("Play", True, WHITE)
+
+class Button:
+    """Create a button, then blit the surface in the while loop"""
+ 
+    def __init__(self, text,  pos, font, bg="black"):
+        self.x, self.y = pos
+        self.font = pygame.font.SysFont("Arial", font)
+        self.change_text(text, bg)
+
+    def change_text(self, text, bg="black"):
+        """Change the text whe you click"""
+        self.text = self.font.render(text, 1, WHITE)
+        self.size = self.text.get_size()
+        self.surface = pygame.Surface(self.size)
+        self.surface.fill(bg)
+        self.surface.blit(self.text, (0, 0))
+        self.rect = pygame.Rect(self.x, self.y, self.size[0], self.size[1])
+ 
+    def show(self):
+        screen.blit(self.surface, (self.x, self.y))
+ 
+    def click(self, event):
+        x, y = pygame.mouse.get_pos()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if pygame.mouse.get_pressed()[0]:
+                if self.rect.collidepoint(x, y):
+                    return True
+
+startButton = Button("Play", (350, 300), font=30, bg=GREEN)
+
+def mainMenu():
+    global playing
+
+    if startOrNot:
+        playing = True
+        screen.fill(BLACK)
+    if playing == False:
+        startButton.show()
+
+
+
 
 # Game reset
+winP1 = 0
+winP2 = 0
+
+def checkWin():
+    global totalHealthP1
+    global totalHealthP2
+    global winP1
+    global winP2
+
+    if totalHealthP2 <= 0:
+        winP2 += 1
+    else:
+        winP1 += 1
+
 def resetGame():
 
     # getting access to the variables needed
@@ -102,16 +165,23 @@ def resetGame():
     global totalHealthP2
     global bulletsPlayer1
     global bulletsPlayer2
+    global playing
+    
+    # Check who won
+    checkWin()
 
     #resetting them all
     totalHealthP1 = 150
     totalHealthP2 = 150
     bulletsPlayer1 = []
     bulletsPlayer2 = []
+    playing = False
 
 #Main Game Loop
 running = True
 while running:
+
+
 
     #Process input (events)
     for event in pygame.event.get():
@@ -119,6 +189,12 @@ while running:
         #Check for closing window
         if event.type == pygame.QUIT:
             running = False
+        
+        startOrNot = startButton.click(event)
+        
+
+    # main Menu check and logic
+    mainMenu()
 
     #keys
     keys = pygame.key.get_pressed()
@@ -149,17 +225,23 @@ while running:
     else:
         count = 30
 
-    if count % rate == 0:
-        bulletsPlayer1.append([x+10,y+25])
-        bulletsPlayer2.append([x1+10,y1-25])
+    if playing:
+        if count % rate == 0:
+            bulletsPlayer1.append([x+10,y+25])
+            bulletsPlayer2.append([x1+10,y1-25])
 
-    shoot(bulletsPlayer1, velBulletTop)
-    shoot(bulletsPlayer2, velBulletBottom)
+        shoot(bulletsPlayer1, velBulletTop)
+        shoot(bulletsPlayer2, velBulletBottom)
 
     # Collisions / Health / Reset
     checkHit(bulletsPlayer1, bulletsPlayer2, x, y, x1, y1-25)
 
     #Draw / Render
+
+    winP1Text = smallFont.render(f"Wins: {winP1}", True, WHITE)
+    winP2Text = smallFont.render(f"Wins: {winP2}", True, WHITE)
+    screen.blit(winP1Text, (10, 10))
+    screen.blit(winP2Text, (10,560))
 
     pygame.draw.rect(screen, RED, pygame.Rect((625,10), (totalHealthP1, 20))) # red health bar
     pygame.draw.rect(screen, RED, (625, 10, 150, 20), 2, border_radius=1) # red health bar outline
