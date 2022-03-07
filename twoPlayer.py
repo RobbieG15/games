@@ -42,13 +42,13 @@ y1 = 550
 vel1 = 5
 
 # shooting mechanics
-velBulletTop = -5
-velBulletBottom = 5
+velBulletTop = -8
+velBulletBottom = 8
 bulletsPlayer1 = []
 bulletsPlayer2 = []
 bulletSize = (5,5)
 count = 30
-rate = 15
+rate = 10
 
 def shoot(bullets, vel):
     for i in bullets:
