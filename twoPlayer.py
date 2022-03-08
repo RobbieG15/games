@@ -8,6 +8,7 @@
 
 #Imports Needed
 import pygame
+import random
 
 #Constant Variables for Window
 WIDTH = 800
@@ -48,7 +49,8 @@ bulletsPlayer1 = []
 bulletsPlayer2 = []
 bulletSize = (5,5)
 count = 30
-rate = 10
+rate1 = 10
+rate2 = 10
 
 def shoot(bullets, vel):
     for i in bullets:
@@ -99,6 +101,7 @@ def checkHit(bullets1, bullets2, x, y, x1, y1):
 # Main Menu
 playing = False
 playText = smallFont.render("Play", True, WHITE)
+startOrNot = False
 
 class Button:
     """Create a button, then blit the surface in the while loop"""
@@ -167,6 +170,9 @@ def resetGame():
     global bulletsPlayer1
     global bulletsPlayer2
     global playing
+    global powerups
+    global powerupsP1
+    global powerupsP2
     
     # Check who won
     checkWin()
@@ -177,10 +183,152 @@ def resetGame():
     bulletsPlayer1 = []
     bulletsPlayer2 = []
     playing = False
+    powerups = []
+    powerupsP1 = []
+    powerupsP2 = []
 
-#Main Game Loop
+# powerups
+powerupDurationSec = 5
+powerupDuration = powerupDurationSec * FPS
+spawnDurationSec = 5
+spawnDuration = spawnDurationSec * FPS
+size = (20,20)
+powerups = []
+powerupsP1 = []
+powerupsP2 = []
+
+def resetSpeeds():
+    global vel
+    global vel1
+    global velBulletBottom
+    global velBulletTop
+    global rate1
+    global rate2
+
+    vel = 5
+    vel1 = 5
+    rate1 = 10
+    rate2 = 10
+    velBulletBottom = 8
+    velBulletTop = -8
+
+# spawn powerup
+def spawn():
+    global powerups
+
+    powerType = random.randint(0,2)
+    spawnPos = (random.randint(50,750), random.randint(50, 550))
+
+    if powerType == 0:
+        # Speed Boost
+        powerups.append([GREEN, spawnPos, size, 0])
+    elif powerType == 1:
+        # Triple Shot
+        powerups.append([WHITE, spawnPos, size, 1])
+    else:
+        # Speed Shot
+        powerups.append([RED, spawnPos, size,2])
+
+    if len(powerups) > 4:
+        powerups.pop(0)
+
+# increase speed powerup
+def speedBoost(player):
+    global vel
+    global vel1
+
+    speedBoost = 3
+    if player == 1:
+        vel += speedBoost
+    else:
+        vel1 += speedBoost
+
+# shoot triple powerup
+def machineGun(player):
+    global rate1
+    global rate2
+
+    rateMultiplier = .5
+    if player == 1:
+        rate1 *= rateMultiplier
+    else:
+        rate2 *= rateMultiplier
+
+
+# shoot faster powerup
+def speedShot(player):
+    global velBulletBottom
+    global velBulletTop
+
+    shotMultiplier = 2
+    if player == 1:
+        velBulletTop *= shotMultiplier
+    else:
+        velBulletTop *= shotMultiplier
+
+def pickup():
+    global powerups
+    global powerupsP1
+    global powerupsP2
+
+    # start the powerup
+    for powerup in powerups:
+        if powerup[1][0] in range(x, x+20) and powerup[1][1] in range(y, y+25):
+            if powerup[3] == 0:
+                powerupsP1.append([1, powerupDuration])
+            elif powerup[3] == 1:
+                powerupsP1.append([2, powerupDuration])
+            else:
+                powerupsP1.append([3, powerupDuration])
+                
+            powerups.remove(powerup)
+
+        elif powerup[1][0] in range(x1-10, x1+10) and powerup[1][1] in range(y1-25, y1):
+            if powerup  [3] == 0:
+                powerupsP2.append([1, powerupDuration])
+            elif powerup[3] == 1:
+                powerupsP2.append([2, powerupDuration])
+            else:
+                powerupsP2.append([3, powerupDuration])
+            
+            powerups.remove(powerup)
+
+def applyPowerups():
+    for i in powerupsP1:
+        i[1] -= 1
+        if i[0] == 1:
+            speedBoost(1)
+        elif i[0] == 2:
+            machineGun(1)
+        else:
+            speedShot(1)
+
+        if i[1] <= 0:
+            powerupsP1.remove(i)
+        
+    for i in powerupsP2:
+        i[1] -= 1
+        if i[0] == 1:
+            speedBoost(2)
+        elif i[0] == 2:
+            machineGun(2)
+        else:
+            speedShot(2)
+
+        if i[1] <= 0:
+            powerupsP2.remove(i)
+
+# Pygame processes
 running = True
-while running:
+def keyStrokes():
+    global running
+    global x
+    global y
+    global x1
+    global y1
+    global vel
+    global vel1
+    global startOrNot
 
     #Process input (events)
     for event in pygame.event.get():
@@ -190,9 +338,6 @@ while running:
             running = False
         
         startOrNot = startButton.click(event)   
-
-    # main Menu check and logic
-    mainMenu()
 
     #keys
     keys = pygame.key.get_pressed()
@@ -217,6 +362,20 @@ while running:
     if keys[pygame.K_DOWN] and y1 < 600:
         y1 += vel
 
+#Main Game Loop
+while running:
+
+    # pygame keystrokes and events
+    keyStrokes()
+
+    # main Menu check and logic
+    mainMenu()
+
+    # powerup changes
+    resetSpeeds()
+    pickup()
+    applyPowerups()
+
     # Shooting
     if count > 0:
         count -= 1
@@ -224,8 +383,15 @@ while running:
         count = 30
 
     if playing:
-        if count % rate == 0:
+        if spawnDuration == 0:
+            spawn()
+            spawnDuration = spawnDurationSec * FPS
+        else: 
+            spawnDuration -= 1
+
+        if count % rate1 == 0:
             bulletsPlayer1.append([x+10,y+25])
+        if count % rate2 == 0:   
             bulletsPlayer2.append([x1+10,y1-25])
 
         shoot(bulletsPlayer1, velBulletTop)
@@ -235,6 +401,10 @@ while running:
     checkHit(bulletsPlayer1, bulletsPlayer2, x, y, x1, y1-25)
 
     #Draw / Render
+
+    # drawing powerups
+    for i in powerups:
+        pygame.draw.rect(screen, i[0], pygame.Rect(i[1], i[2]))
 
     screen.blit(winP1Text, (10, 10)) # win total player 1 text
     screen.blit(winP2Text, (10,560)) # win total player 2 text
