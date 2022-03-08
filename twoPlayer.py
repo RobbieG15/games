@@ -264,7 +264,7 @@ def speedShot(player):
     if player == 1:
         velBulletTop *= shotMultiplier
     else:
-        velBulletTop *= shotMultiplier
+        velBulletBottom *= shotMultiplier
 
 def pickup():
     global powerups
@@ -354,13 +354,13 @@ def keyStrokes():
 
     # Player 2 movement
     if keys[pygame.K_LEFT] and x1 > 0:
-        x1 -= vel
+        x1 -= vel1
     if keys[pygame.K_RIGHT] and x1 < 780:
-        x1 += vel
+        x1 += vel1
     if keys[pygame.K_UP] and y1 > 320:
-        y1 -= vel
+        y1 -= vel1
     if keys[pygame.K_DOWN] and y1 < 600:
-        y1 += vel
+        y1 += vel1
 
 #Main Game Loop
 while running:
