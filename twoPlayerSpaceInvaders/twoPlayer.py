@@ -324,6 +324,59 @@ def applyPowerups():
         if i[1] <= 0:
             powerupsP2.remove(i)
 
+# obstacles
+boulderSize = (70,70)
+boulderDamage = 50
+boulders = []
+boulderDurationSec = 4
+boulderDuration = boulderDurationSec * FPS
+boulderIMG = pygame.image.load("Boulder.png")
+boulderIMG = pygame.transform.scale(boulderIMG, boulderSize)
+
+def spawnBoulder():
+    global boulderIMG
+
+    print("spawning Boulder")
+    boulderVel = 45 * (1/FPS)
+    side = random.randint(1, 2)
+    if side == 1:
+        ypos = -50
+    else:
+        ypos = 650
+        boulderVel = -boulderVel
+    xpos = random.randint(50,750)
+
+    boulders.append([xpos, ypos, boulderVel, boulderIMG])
+
+def moveBoulder():
+    global boulders
+
+    for boulder in boulders:
+        boulder[1] += boulder[2]
+        screen.blit(boulder[3], (boulder[0], boulder[1]))
+
+def hitBoulder():
+    global totalHealthP1
+    global totalHealthP2
+
+    for boulder in boulders:
+        if x in range(boulder[0], boulder[0] + boulderSize[0]) and (y+25) in range(round(boulder[1]), round(boulder[1]) + boulderSize[1]):
+            totalHealthP1 -= boulderDamage
+            boulders.remove(boulder)
+        if x1 in range(boulder[0], boulder[0] + boulderSize[0]) and (y1-25) in range(round(boulder[1]), round(boulder[1]) + boulderSize[1]):
+            totalHealthP2 -= boulderDamage
+            boulders.remove(boulder)
+
+def removeBoulder():
+    global boulders
+
+    for boulder in boulders:
+        if boulder[1] < -50:
+            boulders.remove(boulder)
+        elif boulder[1] > 650:
+            boulders.remove(boulder)
+
+
 # Pygame processes
 running = True
 def keyStrokes():
@@ -382,6 +435,11 @@ while running:
     pickup()
     applyPowerups()
 
+    # boulder changes
+    moveBoulder()
+    hitBoulder()
+    removeBoulder()
+
     # Shooting
     if count > 0:
         count -= 1
@@ -395,6 +453,12 @@ while running:
         else: 
             spawnDuration -= 1
 
+        if boulderDuration == 0:
+            spawnBoulder()
+            boulderDuration = boulderDurationSec * FPS
+        else:
+            boulderDuration -= 1
+
         if count % rate1 == 0:
             bulletsPlayer1.append([x+10,y+25])
         if count % rate2 == 0:   
@@ -402,6 +466,7 @@ while running:
 
         shoot(bulletsPlayer1, velBulletTop)
         shoot(bulletsPlayer2, velBulletBottom)
+        moveBoulder()
 
     # Collisions / Health / Reset
     checkHit(bulletsPlayer1, bulletsPlayer2, x, y, x1, y1-25)
