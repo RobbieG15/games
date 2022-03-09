@@ -24,6 +24,13 @@ The file `mathQuiz.py` is also a terminal game that asks very simple arithmatic 
 
 The file `pong.py` is a two player game made using the `turtle` module in python. It is a remake of the old style pong game and is played on one computer with people operating the arrow keys and wasd as well.
 
-## twoPlayer.py
+## twoPlayerSpaceInvaders
 
-The file `twoPlayer.py` is my current project in terms of short games. The hope is to make another type of 2d game where players are fighting like space invaders in a way.
+The folder `twoPlayerSpaceInvaders` is my current project in terms of short games. It is a two player game that has the following features.
+
+* main menu
+* pixel art
+* powerups
+* stat tracker
+* health bars
+* collision checking
