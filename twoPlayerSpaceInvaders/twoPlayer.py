@@ -173,6 +173,7 @@ def resetGame():
     global powerups
     global powerupsP1
     global powerupsP2
+    global boulders
     
     # Check who won
     checkWin()
@@ -186,6 +187,7 @@ def resetGame():
     powerups = []
     powerupsP1 = []
     powerupsP2 = []
+    boulders = []
 
 # powerups
 powerupDurationSec = 8
