@@ -338,7 +338,6 @@ boulderIMG = pygame.transform.scale(boulderIMG, boulderSize)
 def spawnBoulder():
     global boulderIMG
 
-    print("spawning Boulder")
     boulderVel = 45 * (1/FPS)
     side = random.randint(1, 2)
     if side == 1:
